@@ -9,3 +9,4 @@ console.log('reversed array:', reversed);
 
 // careful: reverse is destructive -- it changes the original array.
 console.log('original array after reverse:', array1);
+

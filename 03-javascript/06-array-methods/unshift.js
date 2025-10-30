@@ -7,3 +7,4 @@ console.log("Original array:", array1);
 
 console.log("New length:", array1.unshift(4, 5));
 console.log("Array after unshift:", array1);
+

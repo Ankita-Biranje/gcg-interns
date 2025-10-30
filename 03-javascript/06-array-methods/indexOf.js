@@ -9,4 +9,4 @@ console.log("Index of 'bison':", beasts.indexOf('bison'));
 // start from index 2
 console.log("Index of 'bison' starting from index 2:", beasts.indexOf('bison', 2));
 
-console.log("Index of 'giraffe':", beasts.indexOf('giraffe'));
+console.log("Index of 'giraffe':", beasts.indexOf('giraffe')); // Output of not found elements is -1

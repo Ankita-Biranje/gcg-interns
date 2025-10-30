@@ -4,7 +4,7 @@
 const array1 = ['a', 'b', 'c'];
 
 // console.log("Using forEach to log elements:");
-// array1.forEach(element => console.log(element));
+array1.forEach(element => console.log(element));
 
 // console.log("\nUsing forEach to log elements and their indices:");
-// array1.forEach((element, index) => console.log(`Index ${index}: ${element}`));
+array1.forEach((element, index) => console.log(`Index ${index}: ${element}`));
