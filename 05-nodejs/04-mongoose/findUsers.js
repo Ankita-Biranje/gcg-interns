@@ -1,0 +1,15 @@
+const User = require('./UserModel');
+const connectDB = require('./connect');
+
+connectDB();
+
+async function findUsers() {
+  try {
+    const users = await User.find({ age: { $gte: 18 } });
+    console.log('Users found:', users);
+  } catch (error) {
+    console.error('Error finding users:', error);
+  }
+}
+
+findUsers();

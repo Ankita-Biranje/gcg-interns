@@ -1,29 +1,89 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    color: #333;
+    margin-top: 40px;
+}
+
 .flex-container {
-    /* display: flex; enables a flex context for all its direct children. */
     display: flex;
-
-    /* justify-content aligns flex items along the main axis (horizontally by default) */
-    /* common values: flex-start, flex-end, center, space-between, space-around */
-    justify-content: center;
-
-    /* align-items aligns flex items along the cross axis (vertically by default) */
-    /* common values: flex-start, flex-end, center, stretch, baseline */
-    align-items: center;
-
-    /* flex-direction defines the direction of the main axis */
-    /* common values: row, row-reverse, column, column-reverse */
-    flex-direction: row;
-
-    height: 300px; /* Height for the container to demonstrate alignment */
     background-color: #f2f2f2;
     border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+    min-height: 150px; /* Minimum height for better visualization */
 }
 
 .flex-item {
     background-color: #4CAF50;
     color: white;
     padding: 20px;
-    margin: 10px;
-    font-size: 30px;
+    margin: 5px;
+    font-size: 20px;
     text-align: center;
+    border-radius: 5px;
+}
+
+/* Flexbox Basics */
+.flex-container.basic {
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+/* Flex Wrap */
+.flex-container.wrap {
+    flex-wrap: wrap; /* Items will wrap to the next line */
+    justify-content: flex-start;
+    align-content: flex-start; /* Controls spacing between lines */
+    height: 300px; /* Give height to see align-content effect */
+}
+
+.flex-container.wrap .flex-item {
+    width: 100px; /* Fixed width to demonstrate wrapping */
+}
+
+/* Flex Grow, Shrink, Basis */
+.flex-container.grow-shrink {
+    justify-content: flex-start;
+}
+
+.item-grow-1 {
+    flex-grow: 1; /* Takes up available space */
+}
+
+.item-grow-2 {
+    flex-grow: 2; /* Takes up twice as much available space as grow-1 */
+}
+
+.item-shrink {
+    flex-shrink: 1; /* Can shrink if needed */
+    width: 200px; /* Initial width */
+}
+
+.item-basis {
+    flex-basis: 150px; /* Initial size before growing/shrinking */
+}
+
+/* Order and Align Self */
+.flex-container.order-align {
+    flex-direction: row;
+    align-items: flex-start; /* Default alignment for container */
+    height: 200px;
+}
+
+.order-1 { order: 1; }
+.order-2 { order: 2; }
+.order-3 { order: 3; }
+
+.align-self-start {
+    align-self: flex-start; /* Overrides container's align-items */
+}
+
+.align-self-end {
+    align-self: flex-end; /* Overrides container's align-items */
 }

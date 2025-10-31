@@ -1,0 +1,136 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+section {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+h2 {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Default Block Behavior */
+.block-div, .block-p, .block-h3 {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+/* Width and Height */
+.fixed-size-box {
+    width: 200px;
+    height: 100px;
+    background-color: #28a745;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.percentage-width-box {
+    width: 50%;
+    height: 80px;
+    background-color: #ffc107;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Text Alignment */
+.align-left {
+    text-align: left;
+    background-color: #f8d7da;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.align-center {
+    text-align: center;
+    background-color: #d1ecf1;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.align-right {
+    text-align: right;
+    background-color: #d4edda;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+/* Centering Block Elements */
+.centered-block {
+    width: 300px;
+    padding: 20px;
+    background-color: #6f42c1;
+    color: white;
+    margin: 0 auto; /* This centers the block horizontally */
+    text-align: center;
+}
+
+/* Floats and Clearing */
+.float-left {
+    float: left;
+    width: 150px;
+    height: 100px;
+    background-color: #dc3545;
+    color: white;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.float-right {
+    float: right;
+    width: 150px;
+    height: 100px;
+    background-color: #007bff;
+    color: white;
+    margin-left: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clear-both {
+    clear: both; /* Clears floats above it */
+    background-color: #6c757d;
+    color: white;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.parent-clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.parent-clearfix {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border: 1px dashed #999;
+    margin-top: 20px;
+}
