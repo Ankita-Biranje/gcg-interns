@@ -1,0 +1,24 @@
+<!-- Interpolation -->
+<h1>{{ pageTitle }}</h1>
+<p>Current count: {{ counter }}</p>
+<p>Expression: {{ 1 + 1 }}</p>
+
+<hr>
+
+<!-- Property Binding -->
+<button [disabled]="isButtonDisabled">Click Me</button>
+<img [src]="imageUrl" [alt]="imageAltText">
+<div [attr.aria-label]="ariaLabel">Accessible Div</div>
+
+<hr>
+
+<!-- Event Binding -->
+<button (click)="onClick()">Log Message</button>
+<input (input)="onInput($event)" placeholder="Type something">
+<p>Input value: {{ inputValue }}</p>
+
+<hr>
+
+<!-- Two-Way Data Binding -->
+<input [(ngModel)]="userName" placeholder="Enter your name">
+<p>Hello, {{ userName }}!</p>

@@ -1,0 +1,55 @@
+<!-- *ngIf examples -->
+<button (click)="toggleVisibility()">Toggle Div</button>
+<div *ngIf="isVisible">
+  <p>This div is visible.</p>
+</div>
+<div *ngIf="!isVisible">
+  <p>This div is hidden.</p>
+</div>
+
+<!-- With else block -->
+<div *ngIf="isLoggedIn; else loggedOut">
+  Welcome, user!
+</div>
+<ng-template #loggedOut>
+  Please log in.
+</ng-template>
+
+<hr>
+
+<!-- *ngFor example -->
+<ul>
+  <li *ngFor="let item of items; let i = index; trackBy: trackByFn">
+    {{ i }}: {{ item }}
+  </li>
+</ul>
+
+<hr>
+
+<!-- *ngSwitch example -->
+<div [ngSwitch]="currentChoice">
+  <div *ngSwitchCase="'option1'">You chose Option 1</div>
+  <div *ngSwitchCase="'option2'">You chose Option 2</div>
+  <div *ngSwitchDefault>Make a choice</div>
+</div>
+<button (click)="setChoice('option1')">Choose 1</button>
+<button (click)="setChoice('option2')">Choose 2</button>
+<button (click)="setChoice('none')">Choose None</button>
+
+<hr>
+
+<!-- ngClass example -->
+<div [ngClass]="{ 'highlight': isHighlighted, 'bold-text': isBold }">
+  This text changes class based on conditions.
+</div>
+<button (click)="toggleHighlight()">Toggle Highlight</button>
+<button (click)="toggleBold()">Toggle Bold</button>
+
+<hr>
+
+<!-- ngStyle example -->
+<div [ngStyle]="currentStyles">
+  This text changes style based on conditions.
+</div>
+<button (click)="applyStyles()">Apply Styles</button>
+<button (click)="clearStyles()">Clear Styles</button>
