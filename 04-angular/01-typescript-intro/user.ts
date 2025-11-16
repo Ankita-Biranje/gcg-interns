@@ -11,16 +11,4 @@ interface Student {
   }
 }
 
-let Manali: Student = {
-  firstName: "Manali",
-  lastName: "Chirmure",
-  id: 24,
-  address: {
-    street: "Main St.",
-    town: "Gadhinglaj",
-    pincode: 416502,
-    available: true
-  }
-}
-
-// Manali.id = 26;
+// Ankira.id = 26;
