@@ -7,7 +7,7 @@ The Angular CLI is a command-line interface tool that you use to initialize, dev
 You need to enable running scripts on your machine (Windows)
 
 ```bash
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 ```
 
 Before you can use the Angular CLI, you need to install it globally using npm.
