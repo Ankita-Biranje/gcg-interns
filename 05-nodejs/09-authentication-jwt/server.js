@@ -1,5 +1,5 @@
-const express = require('express');
-const authenticateToken = require('./authMiddleware');
+import express from 'express';
+import authenticateToken from './authMiddleware.js';
 
 const app = express();
 app.use(express.json()); // For parsing application/json

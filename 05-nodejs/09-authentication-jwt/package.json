@@ -1,0 +1,17 @@
+{
+    "name": "09-authentication-jwt",
+    "version": "1.0.0",
+    "description": "JWT Authentication example",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.21.2",
+        "jsonwebtoken": "^9.0.2"
+    }
+}

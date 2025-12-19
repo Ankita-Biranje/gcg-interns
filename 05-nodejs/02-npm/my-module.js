@@ -8,9 +8,6 @@ function greet() {
 }
 
 // To make variables and functions available to other modules, we need to export them.
-// We can do this by assigning them to the module.exports object.
+// We can do this by using the export keyword.
 
-module.exports = {
-    message: message,
-    greet: greet
-};
+export { message, greet };

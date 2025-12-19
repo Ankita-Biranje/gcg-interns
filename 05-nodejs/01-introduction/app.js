@@ -6,7 +6,7 @@
 console.log("Hello, Node.js!");
 
 // The http module is a built-in Node.js module that allows Node.js to transfer data over the HyperText Transfer Protocol (HTTP).
-const http = require('http');
+import http from 'http';
 
 // The createServer() method of the http module creates an HTTP server.
 const server = http.createServer((req, res) => {
@@ -14,7 +14,7 @@ const server = http.createServer((req, res) => {
     // The req object represents the request from the client.
     // The res object represents the response from the server.
 
-    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.writeHead(200, { 'Content-Type': 'text/html' });
     // The writeHead() method sends a response header to the request.
     // The first argument is the status code (200 means OK).
     // The second argument is an object containing the response headers.

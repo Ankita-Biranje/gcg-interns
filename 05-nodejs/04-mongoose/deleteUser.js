@@ -1,5 +1,5 @@
-const User = require('./UserModel');
-const connectDB = require('./connect');
+import User from './UserModel.js';
+import connectDB from './connect.js';
 
 connectDB();
 

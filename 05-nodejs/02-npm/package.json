@@ -1,8 +1,9 @@
 {
-  "name": "03-npm",
+  "name": "02-npm",
   "version": "1.0.0",
   "description": "A simple example of using an npm package.",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "start": "node app.js"
   },
@@ -10,6 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.21.2"
   }
 }

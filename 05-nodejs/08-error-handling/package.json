@@ -1,0 +1,16 @@
+{
+    "name": "08-error-handling",
+    "version": "1.0.0",
+    "description": "Error handling examples",
+    "main": "express-error-handler.js",
+    "type": "module",
+    "scripts": {
+        "start": "node express-error-handler.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.21.2"
+    }
+}
