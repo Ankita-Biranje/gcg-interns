@@ -1,203 +1,127 @@
-# Angular Directives
+# Angular Directives & Control Flow
 
-Directives are classes that add additional behavior to elements in your Angular applications. They allow you to manipulate the DOM by changing its appearance, structure, or behavior. Angular has three kinds of directives:
+Directives classes that add additional behavior to elements in your Angular applications.
+Modern Angular (v17+) introduces a new built-in **Control Flow** syntax that replaces many traditional structural directives (`*ngIf`, `*ngFor`).
 
-1.  **Components**: Directives with a template. (We've already covered these).
-2.  **Structural Directives**: Change the DOM layout by adding and removing DOM elements.
-3.  **Attribute Directives**: Change the appearance or behavior of an element, component, or another directive.
+## 1. Control Flow (The New Standard)
 
-## 1. Structural Directives
+Angular's control flow provides a cleaner, more performant way to write logic in your templates.
 
-Structural directives are responsible for HTML layout. They shape or reshape the DOM's structure, typically by adding, removing, or manipulating elements.
+### Conditional rendering (`@if`)
 
-### `*ngIf`
-
-The `*ngIf` directive conditionally adds or removes an element from the DOM based on a truthy/falsy expression.
+Replaces `*ngIf`.
 
 ```html
-<!-- app.component.html -->
-<button (click)="toggleVisibility()">Toggle Div</button>
-<div *ngIf="isVisible">
-  <p>This div is visible.</p>
-</div>
-<div *ngIf="!isVisible">
-  <p>This div is hidden.</p>
-</div>
+<button (click)="toggleVisibility()">Toggle</button>
 
-<!-- With else block -->
-<div *ngIf="isLoggedIn; else loggedOut">
-  Welcome, user!
-</div>
-<ng-template #loggedOut>
-  Please log in.
-</ng-template>
-```
-
-```typescript
-// app.component.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-})
-export class AppComponent {
-  isVisible: boolean = true;
-  isLoggedIn: boolean = false;
-
-  toggleVisibility() {
-    this.isVisible = !this.isVisible;
-  }
+@if (isVisible) {
+  <div class="box">Content is visible!</div>
+} @else {
+  <div class="box hidden">Content is hidden.</div>
 }
 ```
 
-### `*ngFor`
+```typescript
+// Component logic
+isVisible = true;
 
-The `*ngFor` directive repeats a DOM node for each item in a list.
+toggleVisibility() {
+  this.isVisible = !this.isVisible;
+}
+```
+
+### Lists (`@for`)
+
+Replaces `*ngFor`.
+**Crucial:** You must provide a `track` expression. This tells Angular how to identify unique items for performance optimization.
 
 ```html
-<!-- app.component.html -->
 <ul>
-  <li *ngFor="let item of items; let i = index; trackBy: trackByFn">
-    {{ i }}: {{ item }}
-  </li>
+  @for (item of items; track item.id) {
+    <li>{{ item.name }}</li>
+  } @empty {
+    <li>No items found.</li>
+  }
 </ul>
 ```
 
-```typescript
-// app.component.ts
-import { Component } from '@angular/core';
+The `@empty` block is automatically shown if the list is empty.
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-})
-export class AppComponent {
-  items: string[] = ['Apple', 'Banana', 'Cherry'];
+### Switch (`@switch`)
 
-  trackByFn(index: number, item: string): number {
-    return index; // Or a unique ID from the item if available
-  }
-}
-```
-
-### `*ngSwitch`
-
-The `*ngSwitch` directive is similar to a JavaScript `switch` statement, allowing you to conditionally render elements based on a match.
+Replaces `*ngSwitch`.
 
 ```html
-<!-- app.component.html -->
-<div [ngSwitch]="currentChoice">
-  <div *ngSwitchCase="'option1'">You chose Option 1</div>
-  <div *ngSwitchCase="'option2'">You chose Option 2</div>
-  <div *ngSwitchDefault>Make a choice</div>
-</div>
-<button (click)="setChoice('option1')">Choose 1</button>
-<button (click)="setChoice('option2')">Choose 2</button>
-<button (click)="setChoice('none')">Choose None</button>
-```
-
-```typescript
-// app.component.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-})
-export class AppComponent {
-  currentChoice: string = 'none';
-
-  setChoice(choice: string) {
-    this.currentChoice = choice;
+@switch (userRole) {
+  @case ('admin') {
+    <admin-dashboard />
+  }
+  @case ('user') {
+    <user-dashboard />
+  }
+  @default {
+    <guest-view />
   }
 }
 ```
 
-## 2. Attribute Directives
+## 2. Default Attribute Directives
 
-Attribute directives change the appearance or behavior of an element, component, or another directive. They look like regular HTML attributes.
+These change the appearance or behavior of an element.
 
-### `ngClass`
-
-The `ngClass` directive allows you to add or remove CSS classes conditionally.
+### `[class]` binding
+The legacy `ngClass` is often replaced by direct binding:
 
 ```html
-<!-- app.component.html -->
-<div [ngClass]="{ 'highlight': isHighlighted, 'bold-text': isBold }">
-  This text changes class based on conditions.
-</div>
-<button (click)="toggleHighlight()">Toggle Highlight</button>
-<button (click)="toggleBold()">Toggle Bold</button>
+<!-- Conditionally add 'active' class if isActive is true -->
+<div [class.active]="isActive">...</div>
+
+<!-- Add multiple classes -->
+<div [class]="isActive ? 'active-class' : 'inactive-class'">...</div>
 ```
 
-```typescript
-// app.component.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
-export class AppComponent {
-  isHighlighted: boolean = false;
-  isBold: boolean = false;
-
-  toggleHighlight() {
-    this.isHighlighted = !this.isHighlighted;
-  }
-
-  toggleBold() {
-    this.isBold = !this.isBold;
-  }
-}
-```
-
-```css
-/* app.component.css */
-.highlight {
-  background-color: yellow;
-}
-.bold-text {
-  font-weight: bold;
-}
-```
-
-### `ngStyle`
-
-The `ngStyle` directive allows you to set multiple inline CSS styles conditionally.
+### `[style]` binding
+Similarly for `ngStyle`:
 
 ```html
-<!-- app.component.html -->
-<div [ngStyle]="currentStyles">
-  This text changes style based on conditions.
-</div>
-<button (click)="applyStyles()">Apply Styles</button>
-<button (click)="clearStyles()">Clear Styles</button>
+<div [style.width.px]="widthValue">...</div>
+<div [style.color]="isError ? 'red' : 'green'">...</div>
 ```
 
+## 3. Custom Directives (Standalone)
+
+You can create your own directives. Like components, they should be **standalone**.
+
 ```typescript
-// app.component.ts
-import { Component } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
+@Directive({
+  selector: '[appHighlight]',
+  standalone: true
 })
-export class AppComponent {
-  currentStyles: Record<string, string> = {};
+export class HighlightDirective {
+  @Input() appHighlight = '';
 
-  applyStyles() {
-    this.currentStyles = {
-      'background-color': 'lightblue',
-      'font-size': '20px',
-      'border': '1px solid blue'
-    };
+  constructor(private el: ElementRef) {}
+
+  @HostListener('mouseenter') onMouseEnter() {
+    this.el.nativeElement.style.backgroundColor = this.appHighlight || 'yellow';
   }
 
-  clearStyles() {
-    this.currentStyles = {};
+  @HostListener('mouseleave') onMouseLeave() {
+    this.el.nativeElement.style.backgroundColor = '';
   }
 }
+```
+
+**Usage:**
+Remember to import it into your component's `imports` array!
+
+```typescript
+@Component({
+  standalone: true,
+  imports: [HighlightDirective],
+  template: `<p [appHighlight]="'lightblue'">Hover me!</p>`
+})
+export class AppComponent {}
 ```

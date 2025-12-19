@@ -1,185 +1,85 @@
-# Angular Services and Dependency Injection
+# Services & Dependency Injection
 
-In Angular, services are a way to share code and data across components. They are typically used for tasks that don't involve the UI, such as fetching data from a server, logging, or performing complex calculations. Dependency Injection (DI) is a core concept in Angular that allows you to provide instances of services to components or other services that need them.
+Services are used to share data logic across multiple components.
+Dependency Injection (DI) is how Angular provides these services to components.
 
-## 1. What is a Service?
+## 1. Creating a Service
 
-A service is a plain TypeScript class that performs a specific task. It's usually decorated with `@Injectable()` to make it available for Angular's dependency injection system.
-
-Services promote:
-
--   **Modularity**: Breaking down complex logic into smaller, reusable units.
--   **Reusability**: Sharing logic across multiple components.
--   **Maintainability**: Easier to test and maintain code.
--   **Separation of Concerns**: Keeping component logic focused on UI interactions.
-
-```typescript
-// src/app/logger.service.ts
-import { Injectable } from '@angular/core';
-
-@Injectable({
-  providedIn: 'root' // Makes the service a singleton and available throughout the app
-})
-export class LoggerService {
-  log(message: string) {
-    console.log(`Log: ${message}`);
-  }
-
-  error(message: string) {
-    console.error(`Error: ${message}`);
-  }
-}
-```
-
-## 2. Dependency Injection (DI)
-
-Dependency Injection is a design pattern in which a class requests dependencies from external sources rather than creating them itself. Angular's DI system provides a way to supply a component with the services it needs.
-
-### How it works:
-
-1.  **Provider**: You configure an injector with a provider that can create a dependency.
-2.  **Injector**: The injector creates the dependency and injects it into the component's constructor.
-3.  **Consumer**: The component (or another service) declares its dependencies in its constructor.
-
-```typescript
-// src/app/app.component.ts
-import { Component } from '@angular/core';
-import { LoggerService } from './logger.service';
-
-@Component({
-  selector: 'app-root',
-  template: `
-    <button (click)="logMessage()">Log Message</button>
-    <button (click)="logError()">Log Error</button>
-  `,
-})
-export class AppComponent {
-  constructor(private logger: LoggerService) { // Injecting the LoggerService
-    this.logger.log('AppComponent initialized');
-  }
-
-  logMessage() {
-    this.logger.log('Button clicked from AppComponent');
-  }
-
-  logError() {
-    this.logger.error('An error occurred from AppComponent');
-  }
-}
-```
-
-## 3. Data Service Example
-
-A common use case for services is to fetch and manage data.
+Services are classes decorated with `@Injectable`.
+Always provide them in `'root'` to make them available application-wide (Singleton).
 
 ```typescript
 // src/app/data.service.ts
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-
-interface Item {
-  id: number;
-  name: string;
-}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root' // Available everywhere
 })
 export class DataService {
-  private items: Item[] = [
-    { id: 1, name: 'Item 1' },
-    { id: 2, name: 'Item 2' },
-    { id: 3, name: 'Item 3' },
-  ];
+  private data: string[] = ['Alpha', 'Beta', 'Gamma'];
 
-  getItems(): Observable<Item[]> {
-    // Simulate fetching data from an API
-    return of(this.items);
-  }
-
-  getItemById(id: number): Observable<Item | undefined> {
-    return of(this.items.find(item => item.id === id));
+  getData() {
+    return this.data;
   }
 }
 ```
 
+## 2. Injecting a Service (`inject()`)
+
+The modern way to inject a service is using the `inject()` function. This replaces constructor-based injection.
+
 ```typescript
-// src/app/item-list/item-list.component.ts
-import { Component, OnInit } from '@angular/core';
+// src/app/data-list/data-list.component.ts
+import { Component, inject, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 
-interface Item {
-  id: number;
-  name: string;
-}
-
 @Component({
-  selector: 'app-item-list',
+  selector: 'app-data-list',
+  standalone: true,
   template: `
-    <h2>Items</h2>
     <ul>
-      <li *ngFor="let item of items">{{ item.name }}</li>
+      @for (item of items; track item) {
+        <li>{{ item }}</li>
+      }
     </ul>
-  `,
+  `
 })
-export class ItemListComponent implements OnInit {
-  items: Item[] = [];
+export class DataListComponent implements OnInit {
+  // Inject the service
+  private dataService = inject(DataService);
 
-  constructor(private dataService: DataService) { }
+  items: string[] = [];
 
-  ngOnInit(): void {
-    this.dataService.getItems().subscribe(data => {
-      this.items = data;
-    });
+  ngOnInit() {
+    this.items = this.dataService.getData();
   }
 }
 ```
 
-## 4. Providers
+### Why `inject()`?
+- **Cleaner**: No constructor boilerplate.
+- **Type-safe**: Automatically infers the type.
+- **Flexible**: Can be used in functions (like Guard functions) outside of classes.
 
-Providers tell Angular how to create an instance of a service. The `@Injectable({ providedIn: 'root' })` syntax is the most common way to provide a service, making it a singleton available throughout the application.
+## 3. Functional Guards
 
-You can also provide services at the module level or component level:
-
-```typescript
-// src/app/app.module.ts
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppComponent } from './app.component';
-import { LoggerService } from './logger.service';
-
-@NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule
-  ],
-  providers: [
-    // LoggerService // Providing at module level (alternative to providedIn: 'root')
-  ],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-```
+In modern Angular, Route Guards are simple functions that use `inject()`.
 
 ```typescript
-// src/app/my-component/my-component.component.ts
-import { Component } from '@angular/core';
-import { LoggerService } from '../logger.service';
+// auth.guard.ts
+import { CanActivateFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthService } from './auth.service';
 
-@Component({
-  selector: 'app-my-component',
-  template: `<button (click)="logMessage()">Log from MyComponent</button>`,
-  providers: [LoggerService] // Providing at component level (new instance for each component)
-})
-export class MyComponent {
-  constructor(private logger: LoggerService) {
-    this.logger.log('MyComponent initialized');
-  }
+export const authGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  logMessage() {
-    this.logger.log('Button clicked from MyComponent');
+  if (authService.isLoggedIn()) {
+    return true;
+  } else {
+    router.navigate(['/login']);
+    return false;
   }
-}
+};
 ```

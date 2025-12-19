@@ -1,189 +1,141 @@
-# Angular Routing
+# Angular Routing (Standalone)
 
-Routing is a core feature in single-page applications (SPAs) that allows users to navigate between different views (components) without a full page reload. Angular's Router module enables you to define navigation paths, handle URL changes, and manage application state based on the current route.
+Routing allows navigation between views. In modern Angular with Standalone Components, routing is simpler and often configured without `NgModule`.
 
 ## 1. Setting Up Routing
 
-When you create a new Angular project using `ng new` and choose to add routing, the CLI generates an `AppRoutingModule` (or similar) and configures the basic routing setup.
+In a modern standalone app, routes are defined in a `routes` array and provided via `app.config.ts`.
 
-### `app-routing.module.ts`
-
-This module is where you define your application's routes. Each route maps a URL path to a component.
+### `app.routes.ts`
 
 ```typescript
-// src/app/app-routing.module.ts
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
-import { ContactComponent } from './contact/contact.component';
-import { NotFoundComponent } from './not-found/not-found.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'about', component: AboutComponent },
-  { path: 'contact', component: ContactComponent },
-  { path: '**', component: NotFoundComponent } // Wildcard route for a 404 page
+  // Lazy load a standalone component
+  {
+    path: 'about',
+    loadComponent: () => import('./about/about.component').then(m => m.AboutComponent)
+  },
+  // Route with parameters
+  { path: 'user/:id', loadComponent: () => ... },
+  { path: '**', redirectTo: '' }
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }
 ```
 
-### `app.module.ts`
+### `app.config.ts`
 
-The `AppRoutingModule` is then imported into your main `AppModule`.
+This file replaces `app.module.ts` providers.
 
 ```typescript
-// src/app/app.module.ts
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModule } from './app-routing.module'; // Import your routing module
-import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
-import { ContactComponent } from './contact/contact.component';
-import { NotFoundComponent } from './not-found/not-found.component';
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { routes } from './app.routes';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    AboutComponent,
-    ContactComponent,
-    NotFoundComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule // Add your routing module here
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes, withComponentInputBinding()) // Enable router
+  ]
+};
 ```
 
 ### `app.component.html`
 
-The `router-outlet` directive acts as a placeholder where Angular dynamically inserts the component corresponding to the current route.
-
 ```html
-<!-- src/app/app.component.html -->
 <nav>
   <a routerLink="/">Home</a>
   <a routerLink="/about">About</a>
-  <a routerLink="/contact">Contact</a>
 </nav>
 
-<router-outlet></router-outlet> <!-- Router renders components here -->
+<router-outlet />
 ```
 
 ## 2. Navigation
 
-Angular provides two main ways to navigate:
+Navigation remains largely the same, but injecting the Router is done via `inject()`.
 
-### `routerLink` Directive
-
-Use the `routerLink` directive in your templates for declarative navigation.
+### `routerLink`
 
 ```html
-<a routerLink="/products">Products</a>
-<a [routerLink]="['/products', productId]">View Product</a>
+<a routerLink="/dashboard">Dashboard</a>
+<a [routerLink]="['/user', userId]">User Profile</a>
 ```
 
-### `Router` Service
-
-Inject the `Router` service into your components for programmatic navigation.
+### Programmatic Navigation
 
 ```typescript
-// src/app/product-list/product-list.component.ts
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
-@Component({
-  selector: 'app-product-list',
-  template: `
-    <button (click)="goToProductDetail(1)">Go to Product 1</button>
-  `,
-})
-export class ProductListComponent {
-  constructor(private router: Router) { }
+@Component({ ... })
+export class loginComponent {
+  private router = inject(Router);
 
-  goToProductDetail(id: number) {
-    this.router.navigate(['/products', id]);
+  login() {
+    // ... logic ...
+    this.router.navigate(['/dashboard']);
   }
 }
 ```
 
-## 3. Route Parameters
+## 3. Accessing Route Parameters
 
-You can define routes that accept parameters, allowing you to pass dynamic data to components.
-
-### Defining a Route with Parameters
-
-```typescript
-// src/app/app-routing.module.ts
-const routes: Routes = [
-  { path: 'product/:id', component: ProductDetailComponent },
-];
-```
-
-### Accessing Route Parameters
-
-Use the `ActivatedRoute` service to access route parameters within your component.
+### Component Input Binding (Recommended)
+By adding `withComponentInputBinding()` to your router provider, route parameters are automatically bound to component inputs.
 
 ```typescript
-// src/app/product-detail/product-detail.component.ts
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+// user.component.ts
+import { Component, input } from '@angular/core';
 
-@Component({
-  selector: 'app-product-detail',
-  template: `
-    <h2>Product Detail</h2>
-    <p>Product ID: {{ productId }}</p>
-  `,
-})
-export class ProductDetailComponent implements OnInit {
-  productId: string | null = null;
+@Component({ ... })
+export class UserComponent {
+  // Matches path: 'user/:id'
+  id = input.required<string>();
 
-  constructor(private route: ActivatedRoute) { }
-
-  ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.productId = params.get('id');
-    });
-  }
+  // Matches ?query=...
+  query = input<string>();
 }
 ```
 
-## 4. Child Routes (Nested Routes)
-
-You can define child routes to create nested views within a parent component.
+### `ActivatedRoute` (Traditional)
+You can still use `ActivatedRoute` if needed.
 
 ```typescript
-// src/app/app-routing.module.ts
-const routes: Routes = [
-  { 
-    path: 'admin', 
-    component: AdminDashboardComponent, 
-    children: [
-      { path: '', redirectTo: 'overview', pathMatch: 'full' },
-      { path: 'overview', component: AdminOverviewComponent },
-      { path: 'users', component: AdminUsersComponent },
-    ]
-  },
-];
+private route = inject(ActivatedRoute);
+
+ngOnInit() {
+  this.route.paramMap.subscribe(params => {
+    console.log(params.get('id'));
+  });
+}
 ```
 
-```html
-<!-- src/app/admin-dashboard/admin-dashboard.component.html -->
-<nav>
-  <a routerLink="./overview">Overview</a>
-  <a routerLink="./users">Users</a>
-</nav>
-<router-outlet></router-outlet> <!-- Child routes render here -->
+## 4. Functional Guards
+
+Class-based guards are deprecated. Use functional guards.
+
+```typescript
+// auth.guard.ts
+import { CanActivateFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthService } from './auth.service';
+
+export const authGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  return authService.isLoggedIn() || router.createUrlTree(['/login']);
+};
+```
+
+**Usage in Routes:**
+
+```typescript
+{
+  path: 'admin',
+  component: AdminComponent,
+  canActivate: [authGuard]
+}
 ```

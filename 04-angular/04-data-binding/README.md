@@ -1,146 +1,109 @@
-# Angular Data Binding
+# Data Binding & Signals
 
-Data binding is a mechanism that synchronizes data between the component's TypeScript code and its HTML template. Angular supports several types of data binding, allowing you to control how data flows in your application.
+Data binding is the mechanism that coordinates the data between your component (TypeScript) and your template (HTML).
+Modern Angular introduces **Signals** as the preferred way to handle data.
 
-## 1. Interpolation (`{{ ... }}`)
+## 1. Types of Data Binding
 
-Interpolation is a one-way data binding technique that allows you to display a component property's value in the template. The value is converted to a string and inserted into the HTML.
+### Interpolation `{{ }}`
+Displays data from the component in the template.
 
 ```html
-<!-- app.component.html -->
-<h1>{{ pageTitle }}</h1>
-<p>Current count: {{ counter }}</p>
-<p>Expression: {{ 1 + 1 }}</p>
+<p>Welcome, {{ userName }}!</p>
 ```
 
+### Property Binding `[ ]`
+Passes values from the component to the properties of an HTML element or another component.
+
+```html
+<img [src]="userImageUrl" [alt]="userName">
+<button [disabled]="isSubmitting">Submit</button>
+```
+
+### Event Binding `( )`
+Listens for events in the template and executes a method in the component.
+
+```html
+<button (click)="onSave()">Save</button>
+<input (input)="onInput($event)">
+```
+
+## 2. Two-Way Binding `[( )]` (Signals)
+
+Traditionally `[(ngModel)]` was used. With Signals, we use the `model()` input or handle it explicitly.
+*Note: `ngModel` requires `FormsModule` to be imported.*
+
 ```typescript
-// app.component.ts
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
+  selector: 'app-binding-example',
+  standalone: true,
+  imports: [FormsModule],
+  template: `
+    <input [(ngModel)]="name" />
+    <p>Hello, {{ name }}!</p>
+  `
 })
-export class AppComponent {
-  pageTitle: string = 'Welcome to Data Binding';
-  counter: number = 0;
+export class BindingExampleComponent {
+  // Traditional property
+  name: string = 'Angular';
+}
+```
 
-  constructor() {
-    setInterval(() => {
-      this.counter++;
-    }, 1000);
+## 3. Input Properties (Signal Inputs)
+
+The modern way to receive data in a child component is via `input()`.
+
+```typescript
+// child.component.ts
+import { Component, input } from '@angular/core';
+
+@Component({
+  selector: 'app-user-card',
+  standalone: true,
+  template: `
+    <div class="card">
+      <h3>{{ name() }}</h3> <!-- Access signal value with () -->
+      <p>Role: {{ role() }}</p>
+    </div>
+  `
+})
+export class UserCardComponent {
+  // Define inputs as signals
+  // If no value is passed, 'Guest' is default
+  name = input<string>('Guest');
+
+  // Request/Required input
+  role = input.required<string>();
+}
+```
+
+```html
+<!-- parent.component.html -->
+<app-user-card [name]="'Alice'" [role]="'Admin'" />
+```
+
+## 4. Output Events (Signal Outputs)
+
+Modern outputs use the `output()` function.
+
+```typescript
+import { Component, output } from '@angular/core';
+
+@Component({ ... })
+export class ChildComponent {
+  // Create an output event
+  delete = output<number>();
+
+  onDeleteClick(id: number) {
+    this.delete.emit(id);
   }
 }
 ```
 
-## 2. Property Binding (`[property]=expression`)
-
-Property binding is a one-way data binding technique that allows you to set the value of an HTML element's property to a component property's value. It flows data from the component to the DOM.
-
+In the parent HTML:
 ```html
-<!-- app.component.html -->
-<button [disabled]="isButtonDisabled">Click Me</button>
-<img [src]="imageUrl" [alt]="imageAltText">
-<div [attr.aria-label]="ariaLabel">Accessible Div</div>
-```
-
-```typescript
-// app.component.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-})
-export class AppComponent {
-  isButtonDisabled: boolean = true;
-  imageUrl: string = 'https://via.placeholder.com/150';
-  imageAltText: string = 'Placeholder Image';
-  ariaLabel: string = 'This is an accessible div';
-
-  constructor() {
-    setTimeout(() => {
-      this.isButtonDisabled = false; // Enable button after 3 seconds
-    }, 3000);
-  }
-}
-```
-
-## 3. Event Binding (`(event)=statement`)
-
-Event binding is a one-way data binding technique that allows you to respond to user actions (like clicks, keypresses, etc.) or other events in the DOM. It flows data from the DOM to the component.
-
-```html
-<!-- app.component.html -->
-<button (click)="onClick()">Log Message</button>
-<input (input)="onInput($event)" placeholder="Type something">
-<p>Input value: {{ inputValue }}</p>
-```
-
-```typescript
-// app.component.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-})
-export class AppComponent {
-  inputValue: string = '';
-
-  onClick() {
-    console.log('Button clicked!');
-  }
-
-  onInput(event: Event) {
-    this.inputValue = (event.target as HTMLInputElement).value;
-  }
-}
-```
-
-## 4. Two-Way Data Binding (`[(ngModel)]=property`)
-
-Two-way data binding combines property binding and event binding to provide a synchronized flow of data between the component and the DOM. Changes in the component update the DOM, and changes in the DOM update the component.
-
-This typically uses the `ngModel` directive, which requires importing `FormsModule` into your Angular module.
-
-```typescript
-// app.module.ts
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
-
-import { AppComponent } from './app.component';
-
-@NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule // Add FormsModule here
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-```
-
-```html
-<!-- app.component.html -->
-<input [(ngModel)]="userName" placeholder="Enter your name">
-<p>Hello, {{ userName }}!</p>
-```
-
-```typescript
-// app.component.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-})
-export class AppComponent {
-  userName: string = 'Guest';
-}
+<app-child (delete)="handleDelete($event)" />
 ```

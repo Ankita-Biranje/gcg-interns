@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-lifecycle-example',
+  standalone: true,
+  imports: [],
   template: `
     <h2>Lifecycle Example</h2>
     <p>Check the console for lifecycle hook messages.</p>
